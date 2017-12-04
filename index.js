@@ -12,7 +12,7 @@ const getSearchUrl = (isbn) => {
   return searchUrl;
 };
 
-const searchAmazonForDetailPageUrl = uri => request({
+const getRequestSettings = uri => ({
   method: 'GET',
   uri,
   headers: {
@@ -20,6 +20,8 @@ const searchAmazonForDetailPageUrl = uri => request({
   },
   transform: body => cheerio.load(body),
 })
+
+const searchAmazonForDetailPageUrl = uri => request(getRequestSettings(uri))
 .then($ => scrapeIt.scrapeHTML($, {
   detailPageUrl: {
     selector: '#s-results-list-atf a.s-access-detail-page',
@@ -28,14 +30,7 @@ const searchAmazonForDetailPageUrl = uri => request({
 }))
 .then(({detailPageUrl}) => detailPageUrl);
 
-const searchAmazonForKindlePageUrl = uri => request({
-  method: 'GET',
-  uri,
-  headers: {
-    'User-Agent': 'Googlebot'
-  },
-  transform: body => cheerio.load(body),
-})
+const searchAmazonForKindlePageUrl = uri => request(getRequestSettings(uri))
 .then($ => scrapeIt.scrapeHTML($, {
   kindlePageUrl: {
     selector: '#tmmSwatches ul li a',
@@ -44,14 +39,7 @@ const searchAmazonForKindlePageUrl = uri => request({
 }))
 .then(({kindlePageUrl}) => AMAZON_BASE_URL + kindlePageUrl);
 
-const searchAmazonForAsin = uri => request({
-  method: 'GET',
-  uri,
-  headers: {
-    'User-Agent': 'Googlebot'
-  },
-  transform: body => cheerio.load(body),
-})
+const searchAmazonForAsin = uri => request(getRequestSettings(uri))
 .then($ => scrapeIt.scrapeHTML($, {
   productDetails: {
     listItem: '#productDetailsTable .content ul li',
