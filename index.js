@@ -6,8 +6,7 @@ const AMAZON_BASE_URL = 'https://www.amazon.com';
 
 const getSearchUrl = (isbn) => {
   const searchUrl = `${AMAZON_BASE_URL}/s/?field-keywords=${isbn}`;
-
-  console.log(searchUrl);
+  // console.log(searchUrl);
 
   return searchUrl;
 };
@@ -58,14 +57,20 @@ const searchAmazonForAsin = uri => request(getRequestSettings(uri))
 );
 
 (async () => {
-  const isbn = '9781507204290';
+  const isbn = process.argv.slice(2)[0];
+  // const isbn = '9781507204290';
+
+  if(!isbn) {
+    throw new Error('ISBN is not provided.');
+  }
+
   const searchUrl = getSearchUrl(isbn);
 
   try {
     const detailPageUrl = await searchAmazonForDetailPageUrl(searchUrl);
     const kindlePageUrl = await searchAmazonForKindlePageUrl(detailPageUrl);
     const asin = await searchAmazonForAsin(kindlePageUrl);
-    console.log(`ASIN: ${asin}.`);
+    console.log(`ASIN: ${asin}.`); // ask for apiKey with email registration
   }
   catch(e) {
     console.log('Not found.');
